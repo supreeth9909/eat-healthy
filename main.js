@@ -32,13 +32,12 @@ const checkoutButton = document.getElementById('checkout-button');
 const searchInput = document.getElementById('search-input');
 const categoryFiltersContainer = document.getElementById('category-filters');
 const noResultsMessage = document.getElementById('no-results-message');
-const chatToggle = document.getElementById('chat-toggle');
+const chatToggleBtn = document.getElementById('chat-toggle');
 const chatWidget = document.getElementById('chat-widget');
 const closeChatButton = document.getElementById('close-chat');
 const chatBody = document.getElementById('chat-body');
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
-const chatSendBtn = document.getElementById('chat-send-btn');
 const themeToggle = document.getElementById('theme-toggle');
 const profileToggle = document.getElementById('profile-toggle');
 
@@ -200,8 +199,8 @@ function renderFilterButtons() {
         const btn = document.createElement('button');
         btn.textContent = cat;
         btn.className = `px-4 py-2 text-sm font-bold rounded-full transition duration-150 ${activeCategory === cat
-                ? 'bg-emerald-500 text-white'
-                : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:bg-emerald-50'
+            ? 'bg-emerald-500 text-white'
+            : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:bg-emerald-50'
             }`;
         btn.onclick = () => {
             activeCategory = cat;
@@ -361,13 +360,13 @@ document.addEventListener('DOMContentLoaded', () => {
     chatHistory.forEach(msg => addChatMessage(msg.parts[0].text, msg.role === 'user'));
 
     // Event Listeners
-    themeToggle.addEventListener('click', toggleTheme);
-    searchInput.addEventListener('input', renderMenu);
-    cartToggle.addEventListener('click', toggleCart);
-    closeCartButton.addEventListener('click', toggleCart);
-    chatToggle.addEventListener('click', toggleChat);
-    closeChatButton.addEventListener('click', toggleChat);
-    chatForm.addEventListener('submit', handleChatSubmit);
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+    if (searchInput) searchInput.addEventListener('input', renderMenu);
+    if (cartToggle) cartToggle.addEventListener('click', toggleCart);
+    if (closeCartButton) closeCartButton.addEventListener('click', toggleCart);
+    if (chatToggleBtn) chatToggleBtn.addEventListener('click', toggleChat);
+    if (closeChatButton) closeChatButton.addEventListener('click', toggleChat);
+    if (chatForm) chatForm.addEventListener('submit', handleChatSubmit);
 
     document.getElementById('payment-form').addEventListener('submit', processPayment);
     document.getElementById('back-to-menu-btn').addEventListener('click', () => navigateTo('home'));
@@ -385,7 +384,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Profile modal placeholder
-    profileToggle.addEventListener('click', () => {
-        alert("Profile & History features coming soon in this professional upgrade!");
+    if (profileToggle) {
+        profileToggle.addEventListener('click', () => {
+            alert("Profile & History features coming soon in this professional upgrade!");
+        });
+    }
+
+    // Final Polish Logic Integrated
+    document.body.classList.add('loaded');
+
+    const backToTopBtn = document.createElement('div');
+    backToTopBtn.className = 'back-to-top';
+    backToTopBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>';
+    document.body.appendChild(backToTopBtn);
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) backToTopBtn.classList.add('visible');
+        else backToTopBtn.classList.remove('visible');
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 });
