@@ -40,6 +40,21 @@ const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const themeToggle = document.getElementById('theme-toggle');
 const profileToggle = document.getElementById('profile-toggle');
+const toastContainer = document.getElementById('toast-container');
+
+/**
+ * Toast Notifications
+ */
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type === 'success' ? 'border-emerald-500' : 'border-red-500'}`;
+    toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span>${message}</span>
+    `;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+}
 
 /**
  * Navigation and View Management
@@ -124,14 +139,17 @@ function addToCart(itemId) {
     if (item) {
         cart.push(item);
         updateCartUI();
+        showToast(`${item.name} added to cart!`);
         closeFoodDetails();
         if (cartWidget.classList.contains('hidden')) toggleCart();
     }
 }
 
 function removeFromCart(index) {
+    const item = cart[index];
     cart.splice(index, 1);
     updateCartUI();
+    showToast(`${item.name} removed from cart.`, 'error');
 }
 
 function toggleCart() {
@@ -288,6 +306,8 @@ function processPayment(e) {
         navigateTo('receipt');
         payBtn.disabled = false;
         loader.classList.add('hidden');
+        showToast("Order placed successfully!");
+        simulateTracking();
     }, 2000);
 }
 
@@ -296,6 +316,23 @@ function renderReceipt(order) {
     document.getElementById('receipt-date').textContent = order.date;
     document.getElementById('receipt-final-total').textContent = `₹${order.total}`;
     document.getElementById('receipt-address').textContent = order.address;
+}
+
+function simulateTracking() {
+    const bar = document.getElementById('order-progress-bar');
+    const badge = document.getElementById('order-status-badge');
+
+    setTimeout(() => {
+        bar.style.width = '50%';
+        badge.textContent = 'Preparing';
+        badge.className = 'px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full';
+    }, 5000);
+
+    setTimeout(() => {
+        bar.style.width = '75%';
+        badge.textContent = 'On the way';
+        badge.className = 'px-2 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full';
+    }, 12000);
 }
 
 /**
@@ -344,7 +381,8 @@ function localResponder(query) {
     if (q.includes('menu')) return "Check our Salads, Bowls, and Vegan specials! I recommend the Salmon Poke Bowl.";
     if (q.includes('deliver')) return "We deliver across the city in under 45 mins. Delivery fee is just ₹50.";
     if (q.includes('pay')) return "We accept Cards, UPI, and Cash on Delivery.";
-    return "I'm here to help! Ask me about our healthy menu items or delivery times.";
+    if (q.includes('help')) return "I can help you browse the menu, track your order, or answer nutrition questions!";
+    return "I'm your EatHealthy assistant! Ask me about our healthy menu items, delivery times, or how to pay.";
 }
 
 // Initializers
@@ -386,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Profile modal placeholder
     if (profileToggle) {
         profileToggle.addEventListener('click', () => {
-            alert("Profile & History features coming soon in this professional upgrade!");
+            alert("Profile features are coming soon. Your order history is already being saved locally!");
         });
     }
 
